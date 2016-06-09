@@ -1,0 +1,18 @@
+table
+{
+  border-color: black;
+  text-align: center;
+}
+
+tr
+{
+  border: 1px;
+  border-color: black;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+ul
+{
+  text-align :left;
+}

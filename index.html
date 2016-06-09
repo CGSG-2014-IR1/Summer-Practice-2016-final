@@ -1,0 +1,107 @@
+<html>
+<head>
+  <title> Choose your side. </title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <script src="js/api/socket.io.js"></script>
+  <script src="js/api/three.js"></script>
+  <script src="js/api/jquery.js"></script>
+  <script src="js/api/OrbitControls.js"></script>
+
+  <script src="js/animation/render/resources/texture.js"></script>
+  <script src="js/animation/render/resources/shader.js"></script>
+  <script src="js/animation/render/resources/material.js"></script>
+  <script src="js/animation/render/primitive/prim.js"></script>
+  <script src="js/animation/render/primitive/characters.js"></script>
+  <script src="js/animation/render/primitive/sprim.js"></script>
+  <script src="js/animation/render/render.js"></script>
+  <script src="js/animation/timer.js"></script>
+  <script src="js/animation/anim.js"></script>
+
+  <script src="js/animation/units/environment/unit_skybox.js"></script>
+  <script src="js/animation/units/layouts/layout_light_img.js"></script>
+  <script src="js/animation/units/layouts/layout_dark_img.js"></script>
+  <script>
+    $(function()
+      {
+        var light_anim = new anim();
+        light_anim.Init("light_side_img_holder");
+        light_anim.UnitAdd(new layout_light_img());
+        light_anim.Run("light_side_img_holder");
+
+        var dark_anim = new anim();
+        dark_anim.Init("dark_side_img_holder");
+        dark_anim.UnitAdd(new layout_dark_img());
+        dark_anim.Run("dark_side_img_holder");
+
+        var socket = io.connect();
+
+        socket.emit('connected');
+
+        $('#light_side_img_holder').click(function()
+          {
+            socket.emit('side', 'light');
+            window.location.replace("light.html");
+          });
+
+        $('#dark_side_img_holder').click(function()
+          {
+            socket.emit('side', 'dark');
+            window.location.replace("dark.html");
+          });
+
+        $('#chat_form').submit(function()
+          {
+            var inp = $('#msg');
+            socket.emit('chat message', {message: inp.val(), user: $("#name").val()});
+            inp.val('');
+            return false;
+          });
+        socket.on('chat message', function(msg)
+          {
+            var msgs = $('#messages');
+            msgs.append("<li>" + "[" + msg.user + "]: " + msg.message);
+            if ($('#messages li').length > 30)
+              $('#messages li').eq(0).remove();
+          });
+        socket.on('side', function(side)
+          {
+            // Opponent had schosen side
+            if (side === 'light')
+            {
+              socket.emit('side', 'dark');
+              window.location.replace("dark.html");
+            }
+            else if (side === 'dark')
+            {
+              socket.emit('side', 'light');
+              window.location.replace("light.html");
+            }
+          });
+      });
+  </script>
+</head>
+
+<body>
+  <table width="100%" height="100%">
+    <tr>
+      <td width="33%" height="100%" id="light_side_img_holder">
+      </td>
+      <td width="33%" height="100%">
+        <div>
+          <ul id="messages"></ul>
+          <form id="chat_form" action="">
+            <input type="text" id="msg" autocomplete="off"/><button>Say</button>
+            <br>
+            <input type="text" id="name" autocomplete="on">Your name</input>
+          </form>
+          <p> Choose your side </p>
+        </div>
+      </td>
+      <td width="33%" height="100%" id="dark_side_img_holder">
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>

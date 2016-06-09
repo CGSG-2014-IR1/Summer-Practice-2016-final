@@ -23,7 +23,7 @@ function anim()
     this.ReflectionCamera = new THREE.CubeCamera(0.01, 1000, 512);                                     // Cubemap camera
     this.ReflectionCamera.position.set(0, 0, 0);
 
-    this.Controls = new THREE.OrbitControls(this.Camera);                                              // Scene controls
+    //this.Controls = new THREE.OrbitControls(this.Camera);                                              // Scene controls
   }
 
   /**
@@ -52,7 +52,7 @@ function anim()
   this.DrawAll = function()
   {
     this.Timer.Update();
-    this.Controls.update(this.Timer.GlobalDeltaTime);
+    //this.Controls.update(this.Timer.GlobalDeltaTime);
     var self = this;
 
     // Response

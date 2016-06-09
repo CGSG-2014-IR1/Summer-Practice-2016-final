@@ -4,11 +4,12 @@ function layout_dark_img()
   {
     this.UnitSkybox = new unit_skybox("../assets/images/skybox/starry/", ".bmp");
     Ani.UnitAdd(this.UnitSkybox);
-    Ani.Camera.position.set(0, 1, 1);
+    Ani.Camera.position.set(0, 0.5, 2.5);
+    Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));
     Ani.Camera.fov = 5;
 
     var light = new THREE.DirectionalLight(0xffffff);
-    light.position.set(0, 5, 5);
+    light.position.set(0, 5, -5);
     light.castShadow = true;
     light.shadow.camera.near = 0.1;
     light.shadow.camera.far = 10;
