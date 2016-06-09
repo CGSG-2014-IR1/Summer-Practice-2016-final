@@ -13,6 +13,7 @@ function anim()
     this.Render.Init(DivID);
     this.Timer.Init();
     this.Camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);  // Main scene camera
+    this.Keyboard = new keyboard(DivID);
 
     this.Scene = new THREE.Scene();                                                                    // Main scene
     this.Camera.position.x = 1;
