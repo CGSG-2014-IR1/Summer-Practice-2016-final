@@ -6,34 +6,31 @@
   <script src="js/api/socket.io.js"></script>
   <script src="js/api/three.js"></script>
   <script src="js/api/jquery.js"></script>
+  <script src="js/api/require.js"></script>
   <script src="js/api/OrbitControls.js"></script>
-
-  <script src="js/animation/render/resources/texture.js"></script>
-  <script src="js/animation/render/resources/shader.js"></script>
-  <script src="js/animation/render/resources/material.js"></script>
-  <script src="js/animation/render/primitive/prim.js"></script>
-  <script src="js/animation/render/primitive/characters.js"></script>
-  <script src="js/animation/render/primitive/sprim.js"></script>
-  <script src="js/animation/render/render.js"></script>
-  <script src="js/animation/input/keyboard.js"></script>
-  <script src="js/animation/timer.js"></script>
-  <script src="js/animation/anim.js"></script>
-
-  <script src="js/animation/units/environment/unit_skybox.js"></script>
-  <script src="js/animation/units/layouts/layout_light_img.js"></script>
-  <script src="js/animation/units/layouts/layout_dark_img.js"></script>
   <script>
     $(function()
       {
-        var light_anim = new anim();
-        light_anim.Init("light_side_img_holder");
-        light_anim.UnitAdd(new layout_light_img());
-        light_anim.Run("light_side_img_holder");
+        require(['js/config'], function()
+          {
+            require(
+              [
+                'animation/anim',
+                'units/layouts/layout_light_img',
+                'units/layouts/layout_dark_img'
+              ], function(anim, layout_light_img, layout_dark_img)
+              {
+                var light_anim = new anim();
+                light_anim.Init("light_side_img_holder");
+                light_anim.UnitAdd(new layout_light_img());
+                light_anim.Run("light_side_img_holder");
 
-        var dark_anim = new anim();
-        dark_anim.Init("dark_side_img_holder");
-        dark_anim.UnitAdd(new layout_dark_img());
-        dark_anim.Run("dark_side_img_holder");
+                var dark_anim = new anim();
+                dark_anim.Init("dark_side_img_holder");
+                dark_anim.UnitAdd(new layout_dark_img());
+                dark_anim.Run("dark_side_img_holder");
+              });
+          });
 
         var socket = io.connect();
 

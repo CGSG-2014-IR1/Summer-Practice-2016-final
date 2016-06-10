@@ -1,8 +1,11 @@
-function prim()
-{
-  this.Copy = function( Geom, Material )
+define(function()
   {
-    this.Geometry = Geom;
-    this.Material = Material;
-  }
-}
+    return function()
+      {
+        this.Copy = function( Geom, Material )
+        {
+          this.Geometry = Geom;
+          this.Material = Material;
+        }
+      }
+  });

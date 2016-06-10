@@ -28,6 +28,6 @@ void main()
   dnorm += dist;
 
   vec4 refr = texture2D(TextureRefraction, PosS + (dnorm.xz + dnorm.xy + dnorm.yz) * DistortionStrength / 3.0);
-  gl_FragColor = vec4(DiffuseColor, 1.0) + refr;
+  gl_FragColor = vec4(DiffuseColor, 1.0) * refr;
   //gl_FragColor = refr;
 }

@@ -31,8 +31,8 @@ var server = http.createServer(function(request, response)
     switch (path)
     {
     case '/index.html':
-      if (Sockets.length >= 2)
-        path = '/spectator.html';
+      //if (Sockets.length >= 2)
+      //  path = '/spectator.html';
       fs.readFile(__dirname + path, function(error, data)
       {
         if (error)
@@ -57,7 +57,7 @@ var server = http.createServer(function(request, response)
             response.end();
           }
         });
-      break;
+      return;
     }
   });
 
