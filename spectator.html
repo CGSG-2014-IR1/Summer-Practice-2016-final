@@ -6,6 +6,8 @@
 
   <script src="js/api/socket.io.js"></script>
   <script src="js/api/jquery.js"></script>
+  <script src="js/api/require.js"></script>
+  <script src="js/api/three.js"></script>
   <script>
     function InitChat( socket )
     {
@@ -29,23 +31,48 @@
     {
       var socket = io.connect();
       InitChat(socket);
+      require(['js/config'], function()
+      {
+        require(
+          [
+            'animation/anim',
+            'units/layouts/battlefield_spectator'
+          ], function(anim, field)
+          {
+            var Anim = new anim();
+            Anim.Init("field");
+            Anim.UnitAdd(new field(socket, 10, "figure_info"));
+
+            Anim.Run("field");
+          });
+      });
+
     })
   </script>
 </head>
 
+
 <body>
 <table width="100%" height="100%">
   <tr>
-    <td width="80%"></td>
+    <td width="80%" id="field"></td>
     <td width="20%">
-      <div>
-        <ul id="messages"></ul>
-        <form id="chat_form" action="">
-          <input type="text" id="msg" autocomplete="off"/><button>Say</button>
-          <br>
-          <input type="text" id="name" autocomplete="on">Your name</input>
-        </form>
-      </div>
+      <table>
+        <tr>
+          <td class="figure_info" id="figure_info">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ul id="messages"></ul>
+            <form id="chat_form">
+              <input type="text" id="msg" autocomplete="off"/><button>Say</button>
+              <br>
+              <input type="text" id="name" autocomplete="on">Your name</input>
+            </form>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
 </table>

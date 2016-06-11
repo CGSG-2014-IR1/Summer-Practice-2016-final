@@ -38,6 +38,9 @@ return function( size, side )
       var a = this.Get(x1, y1);
       var d = this.Get(x2, y2);
 
+      if (a.Side == d.Side)
+        return 'select';
+
       if (a.Stamina <= 0)
         return 'fail';
       var dist = Math.abs(x1 - x2) + Math.abs(y1 - y2);
@@ -72,15 +75,15 @@ return function( size, side )
         if (this.Get(x2, y2) != null && this.Get(x2, y2).Side == this.Side)
           return 'select';
         else
-          return 'fail';
+          return 'fail1';
       else
         if (this.Get(x1, y1).Side != this.Side)
-          return 'fail';
+          return 'fail2';
       if (this.Get(x2, y2) != null)
         return this.Attack(x1, y1, x2, y2);
       var dist = Math.abs(x1 - x2) + Math.abs(y1 - y2);
       if (dist > this.Get(x1, y1).Stamina)
-        return 'fail';
+        return 'fail3';
       this.Board[y2 * this.Size + x2] = this.Board[y1 * this.Size + x1];
       this.Set(x1, y1, null);
       this.Board[y2 * this.Size + x2].Prim.Mesh.position.add(new THREE.Vector3(y2 - y1, 0, x2 - x1));
