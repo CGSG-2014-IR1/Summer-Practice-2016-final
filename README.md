@@ -5,7 +5,7 @@ My final summer practice task.
 <ol>
   <li> Run index.js
   <li> Enter localhost:8000/index.html
-  <li> First 2 connections will be players, all others - spectators (they got only chat at the moment)
+  <li> First 2 connections will be players, all others - spectators
   <li> Click on image to choose side
   <li> Arrow buttons to move selector, Enter to confirm movement
   <li> Insert to end turn
