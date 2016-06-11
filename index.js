@@ -89,7 +89,11 @@ listener.sockets.on('connection', function(socket)
       });
     socket.on('turn', function()
       {
-        listener.emit('turn');
+        socket.broadcast.emit('turn');
+      });
+    socket.on('win', function(data)
+      {
+        listener.emit('win', data);
       });
   });
 
