@@ -1,6 +1,7 @@
 precision mediump float;
 
 uniform float Time;
+uniform float Alpha;
 uniform vec3 ColorBase;
 uniform vec3 ColorAdd;
 
@@ -11,5 +12,5 @@ varying vec2 PosS;
 void main( void )
 {
   vec3 col = ColorBase + ColorAdd * abs(sin(Time));
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = vec4(col, Alpha);
 }

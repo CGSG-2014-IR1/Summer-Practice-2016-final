@@ -42,12 +42,11 @@
             {
               var Anim = new anim();
               Anim.Init("field");
-              Anim.UnitAdd(new field());
+              Anim.UnitAdd(new field(socket, 10));
 
               Anim.Run("field");
             });
         });
-
       })
   </script>
 </head>

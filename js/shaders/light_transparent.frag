@@ -29,5 +29,8 @@ void main()
 
   vec4 refr = texture2D(TextureRefraction, PosS + (dnorm.xz + dnorm.xy + dnorm.yz) * DistortionStrength / 3.0);
   gl_FragColor = vec4(DiffuseColor, 1.0) * refr;
+  vec3 d1 = normalize(-Pos + vec3(0, 0, 5));
+  vec3 d2 = normalize(-Pos + vec3(10, 0, 5));
+  gl_FragColor.rgb *= 0.80 + dot(d1, Norm) * 0.1 + dot(d2, Norm) * 0.1;
   //gl_FragColor = refr;
 }

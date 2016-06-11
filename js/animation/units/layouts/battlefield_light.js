@@ -6,8 +6,8 @@ define(
     'units/environment/unit_skybox',
     './board'
   ], function(shader, char, sprim, unit_skybox, board)
-{
-  return function( socket, size )
+  {
+    return function( socket, size )
     {
       this.Size = size;
       this.Socket = socket;
@@ -52,7 +52,7 @@ define(
             uniforms: {
               "TextureRefraction": {type: "t", value: Ani.Render.RefractionRenderTarget.texture},
               "CameraPos": {type: "v3", value: Ani.Camera.position},
-              "DiffuseColor": {type: "v3", value: new THREE.Vector3(0.9, 0.9, 0.9)},
+              "DiffuseColor": {type: "v3", value: new THREE.Vector3(0.6, 0.6, 0.6)},
               "DistortionStrength": {type: "f", value: 0.05},
               "Time": {type: "f", value: Ani.Timer.Time}
             },
@@ -81,9 +81,8 @@ define(
 
       this.Init = function( Ani )
       {
-        this.Board = new board(this.Size, 'Dark');
-        this.Turn = true;
-        this.InitFigures(Ani);
+        this.Board = new board(this.Size, 'Light');
+        this.Turn = false;
         this.UnitSkybox = new unit_skybox("../assets/images/skybox/battle1/", ".bmp");
         Ani.UnitAdd(this.UnitSkybox);
         Ani.Camera.position.set(-1, 4, -2);
@@ -127,7 +126,7 @@ define(
             fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
             transparent: true
           }));
-        this.Selector.Mesh.position.y = 0.001;
+        this.Selector.Mesh.position.set(this.Size - 1, 0.001, this.Size - 1);
         this.SelectorFigure = new sprim().CreatePlane(1, 1, new THREE.ShaderMaterial(
           {
             uniforms: {
@@ -141,17 +140,16 @@ define(
             fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
             transparent: true
           }));
-        this.SelectorFigure.Mesh.position.y = 0.0015;
-        this.SelectorFigure.Mesh.position.x = 2;
+        this.SelectorFigure.Mesh.position.set(this.Size - 1, 0.0015, this.Size - 1);
         this.HelpMaterial = new THREE.ShaderMaterial(
           {
             uniforms:
-              {
-                "ColorBase": {type: "v3", value: new THREE.Vector3(0.1, 0.2, 0.1)},
-                "ColorAdd": {type: "v3", value: new THREE.Vector3(0.1, 0.3, 0.1)},
-                "Time": {type: "f", value: Ani.Timer.GlobalTime},
-                "Alpha": {type: "f", value: 0.33}
-              },
+            {
+              "ColorBase": {type: "v3", value: new THREE.Vector3(0.1, 0.2, 0.1)},
+              "ColorAdd": {type: "v3", value: new THREE.Vector3(0.1, 0.3, 0.1)},
+              "Time": {type: "f", value: Ani.Timer.GlobalTime},
+              "Alpha": {type: "f", value: 0.33}
+            },
             side: THREE.DoubleSide,
             vertexShader: new shader().Load("../js/shaders/environment/selector.vert"),
             fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
@@ -160,12 +158,12 @@ define(
         this.AttackMaterial = new THREE.ShaderMaterial(
           {
             uniforms:
-              {
-                "ColorBase": {type: "v3", value: new THREE.Vector3(0.5, 0.2, 0.1)},
-                "ColorAdd": {type: "v3", value: new THREE.Vector3(0.5, 0.3, 0.1)},
-                "Time": {type: "f", value: Ani.Timer.GlobalTime},
-                "Alpha": {type: "f", value: 0.5}
-              },
+            {
+              "ColorBase": {type: "v3", value: new THREE.Vector3(0.5, 0.2, 0.1)},
+              "ColorAdd": {type: "v3", value: new THREE.Vector3(0.5, 0.3, 0.1)},
+              "Time": {type: "f", value: Ani.Timer.GlobalTime},
+              "Alpha": {type: "f", value: 0.5}
+            },
             side: THREE.DoubleSide,
             vertexShader: new shader().Load("../js/shaders/environment/selector.vert"),
             fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
@@ -188,7 +186,9 @@ define(
         this.PrevMov = Ani.Timer.GlobalTime;
         this.Scale = 1;
 
+        this.InitFigures(Ani);
 
+        this.UpdateHelpers(this.Size - 1, this.Size - 1);
         var self = this;
         this.Socket.on('move', function(data)
           {
@@ -197,18 +197,18 @@ define(
         this.Socket.on('turn', function()
           {
             self.Turn = !self.Turn;
-            self.Board.Move(0, 0, 0, 0);
-            self.UpdateHelpers(0, 0);
-            self.SelectorFigure.Mesh.position.set(0, 0, 0);
+            self.Board.Move(self.Size - 1, self.Size - 1, self.Size - 1, self.Size - 1);
+            self.UpdateHelpers(self.Size - 1, self.Size - 1);
+            self.SelectorFigure.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
             self.SelectorFigure.Mesh.position.y = 0.0015;
-            self.Selector.Mesh.position.set(0, 0, 0);
+            self.Selector.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
             self.Selector.Mesh.position.y = 0.001;
           });
       };
 
       this.Render = function( Ani )
       {
-        var shift = new THREE.Vector3(-2, 4, -1).multiplyScalar(this.Scale);
+        var shift = new THREE.Vector3(2, 4, 1).multiplyScalar(this.Scale);
         this.Selector.Mesh.material.uniforms.Time.value = Ani.Timer.GlobalTime;
         this.SelectorFigure.Mesh.material.uniforms.Time.value = Ani.Timer.GlobalTime;
         this.HelpMaterial.uniforms.Time.value = Ani.Timer.GlobalTime;
@@ -227,31 +227,13 @@ define(
           var z = Math.fmod(i, this.Size);
           var x = Math.floor(i / this.Size);
           var dist = Math.abs(z - zf) + Math.abs(x - xf);
-          if (f != null)
-          {
-            this.Helpers[i].Mesh.visible = (dist <= f.Speed || dist <= f.Radius);
-            if (this.Board.Get(z, x) != null)
-              if (this.Board.Get(z, x).Side == f.Side)
-                if (dist <= f.Speed)
-                  this.Helpers[i].Mesh.material = this.HelpMaterial;
-                else
-                  this.Helpers[i].Mesh.visible = false;
-              else
-                if (dist <= f.Radius)
-                  this.Helpers[i].Mesh.material = this.AttackMaterial;
-                else
-                  if (dist <= f.Speed)
-                    this.Helpers[i].Mesh.material = this.HelpMaterial;
-                  else
-                    this.Helpers[i].Mesh.visible = false;
-            else
-              if (dist <= f.Speed)
-                this.Helpers[i].Mesh.material = this.HelpMaterial;
-              else
-                this.Helpers[i].Mesh.visible = false;
-          }
+          this.Helpers[i].Mesh.visible = (f != null) && (dist <= f.Speed);
+          if (this.Board.Get(z, x) != null)
+            this.Helpers[i].Mesh.material =
+              (this.Board.Get(z, x).Side == f.Side ||
+              dist > f.Radius ? this.HelpMaterial : this.AttackMaterial);
           else
-            this.Helpers[i].Mesh.visible = false;
+            this.Helpers[i].Mesh.material = this.HelpMaterial;
         }
       };
 
@@ -259,22 +241,22 @@ define(
       {
         if (Ani.Keyboard.Keys[38] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
-          this.Selector.Mesh.position.x++;
+          this.Selector.Mesh.position.x--;
           this.PrevMov = Ani.Timer.GlobalTime;
         }
         else if (Ani.Keyboard.Keys[40] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
-          this.Selector.Mesh.position.x--;
+          this.Selector.Mesh.position.x++;
           this.PrevMov = Ani.Timer.GlobalTime;
         }
         if (Ani.Keyboard.Keys[37] == 1 && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
-          this.Selector.Mesh.position.z--;
+          this.Selector.Mesh.position.z++;
           this.PrevMov = Ani.Timer.GlobalTime;
         }
         else if (Ani.Keyboard.Keys[39] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
-          this.Selector.Mesh.position.z++;
+          this.Selector.Mesh.position.z--;
           this.PrevMov = Ani.Timer.GlobalTime;
         }
         if (Ani.Keyboard.Keys[107])
@@ -312,8 +294,8 @@ define(
         if (this.Turn && Ani.Keyboard.Keys[45] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
           this.Socket.emit('turn');
-          this.Socket.emit('chat message', {message: "Light, it's your turn now!", user: 'DARKNESS'});
+          this.Socket.emit('chat message', {message: "Darkness, it's your turn now!", user: 'LIGHT'});
         }
       };
     }
-});
+  });

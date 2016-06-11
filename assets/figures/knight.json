@@ -1,0 +1,8 @@
+{
+  "Type": "knight",
+  "Sight": "3",
+  "Radius": "1",
+  "Speed": "6",
+  "Health": "5",
+  "Attack": "4"
+}

@@ -74,17 +74,26 @@ define(['./render/render', './timer', './input/keyboard'], function(render, time
           // Reflection render
           this.ReflectionCamera.updateCubeMap(this.Render.Renderer, this.Scene);
           // Refraction render
+          var viss = [];
           this.Scene.children.forEach(function(Child)
           {
             if (Child instanceof THREE.Mesh)
               if (Child.material.transparent)
+              {
+                viss.push(Child.visible);
                 Child.visible = false;
+              }
           });
           this.Render.Renderer.render(this.Scene, this.Camera, this.Render.RefractionRenderTarget);
+          var i = 0;
           this.Scene.children.forEach(function(Child)
           {
             if (Child instanceof THREE.Mesh)
-              Child.visible = true;
+              if (Child.material.transparent)
+              {
+                Child.visible = viss[i];
+                i++;
+              }
           });
           // Scene render
           this.Render.Renderer.render(this.Scene, this.Camera);

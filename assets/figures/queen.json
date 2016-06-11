@@ -1,0 +1,8 @@
+{
+  "Type": "queen",
+  "Sight": "4",
+  "Radius": "4",
+  "Speed": "4",
+  "Health": "10",
+  "Attack": "3"
+}

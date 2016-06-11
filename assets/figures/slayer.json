@@ -1,0 +1,8 @@
+{
+  "Type": "slayer",
+  "Sight": "3",
+  "Radius": "1",
+  "Speed": "3",
+  "Health": "1",
+  "Attack": "10"
+}

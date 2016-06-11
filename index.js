@@ -31,8 +31,8 @@ var server = http.createServer(function(request, response)
     switch (path)
     {
     case '/index.html':
-      //if (Sockets.length >= 2)
-      //  path = '/spectator.html';
+      if (Sockets.length >= 2)
+        path = '/spectator.html';
       fs.readFile(__dirname + path, function(error, data)
       {
         if (error)
@@ -71,16 +71,25 @@ listener.sockets.on('connection', function(socket)
       });
 
     socket.on('chat message', function(data)
-    {
-      listener.emit('chat message', data);
-    });
+      {
+        listener.emit('chat message', data);
+      });
 
     socket.on('side', function(data)
-    {
-      if (socket === Sockets[0])
-        Sockets[1].emit('side', data);
-      else
-        Sockets[0].emit('side', data);
-    });
+      {
+        if (socket === Sockets[0])
+          Sockets[1].emit('side', data);
+        else
+          Sockets[0].emit('side', data);
+      });
+
+    socket.on('move', function(data)
+      {
+        socket.broadcast.emit('move', data);
+      });
+    socket.on('turn', function()
+      {
+        listener.emit('turn');
+      });
   });
 

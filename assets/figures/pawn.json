@@ -1,0 +1,8 @@
+{
+  "Type": "pawn",
+  "Sight": "3",
+  "Radius": "1",
+  "Speed": "3",
+  "Health": "4",
+  "Attack": "2"
+}

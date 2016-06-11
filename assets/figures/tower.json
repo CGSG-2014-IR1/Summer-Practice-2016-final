@@ -1,0 +1,8 @@
+{
+  "Type": "tower",
+  "Sight": "1",
+  "Radius": "1",
+  "Speed": "2",
+  "Health": "20",
+  "Attack": "2"
+}

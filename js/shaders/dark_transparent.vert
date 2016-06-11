@@ -5,7 +5,7 @@ varying vec2 PosS;
 void main()
 {
   Norm = normal;
-  Pos = position;
+  Pos = (modelMatrix * vec4(position, 1.0)).xyz;
   vec4 glPos = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   gl_Position = glPos;
   PosS = ((glPos.xy / glPos.w) + vec2(1.0, 1.0)) / 2.0;

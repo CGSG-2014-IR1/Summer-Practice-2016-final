@@ -2,6 +2,36 @@ define(['prim/prim'], function(prim)
   {
     return function()
       {
+        this.CreateFigure = function( Name, Scale, Material )
+        {
+          switch (Name)
+          {
+          case 'king':
+            return this.CreateKing(Scale, Material);
+            break;
+          case 'queen':
+            return this.CreateQueen(Scale, Material);
+            break;
+          case 'mage':
+            return this.CreateMage(Scale, Material);
+            break;
+          case 'slayer':
+            return this.CreateSlayer(Scale, Material);
+            break;
+          case 'knight':
+            return this.CreateKnight(Scale, Material);
+            break;
+          case 'tower':
+            return this.CreateTower(Scale, Material);
+            break;
+          case 'pawn':
+            return this.CreatePawn(Scale, Material);
+            break;
+          default:
+              throw 'ERROR: Failed to create figure ' + Name;
+          }
+        };
+
         this.CreateQueen = function( Scale, Material )
         {
           var ret = new prim();
