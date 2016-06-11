@@ -22,6 +22,14 @@ return function( size, side )
       //console.log(this.Board[y * this.Size + x]);
     };
 
+    this.Refresh = function()
+    {
+      for (var i = 0; i < this.Size; i++)
+        for (var j = 0; j < this.Size; j++)
+          if (this.Get(j, i) != null)
+            this.Get(j, i).Stamina = this.Get(j, i).Speed;
+    };
+
     /**
      * @returns {string}
      */
@@ -30,16 +38,22 @@ return function( size, side )
       var a = this.Get(x1, y1);
       var d = this.Get(x2, y2);
 
+      if (a.Stamina <= 0)
+        return 'fail';
       var dist = Math.abs(x1 - x2) + Math.abs(y1 - y2);
       if (a.Side == d.Side)
         return 'select';
       if (dist <= a.Radius)
       {
-        d.Health -= a.Attack;
+        this.Get(x2, y2).Health -= a.Attack;
+        this.Get(x1, y1).Stamina = 0;
+        console.log(this.Get(x1, y1));
         if (d.Health <= 0)
         {
           d.Prim.Mesh.visible = false;
           this.Board[y2 * this.Size + x2] = null;
+          if (d.Type == "king")
+            return 'win';
           return 'kill';
         }
         return 'attack';
@@ -65,11 +79,12 @@ return function( size, side )
       if (this.Get(x2, y2) != null)
         return this.Attack(x1, y1, x2, y2);
       var dist = Math.abs(x1 - x2) + Math.abs(y1 - y2);
-      if (dist > this.Get(x1, y1).Speed)
+      if (dist > this.Get(x1, y1).Stamina)
         return 'fail';
       this.Board[y2 * this.Size + x2] = this.Board[y1 * this.Size + x1];
       this.Set(x1, y1, null);
       this.Board[y2 * this.Size + x2].Prim.Mesh.position.add(new THREE.Vector3(y2 - y1, 0, x2 - x1));
+      this.Board[y2 * this.Size + x2].Stamina -= dist;
       return 'move';
     };
 

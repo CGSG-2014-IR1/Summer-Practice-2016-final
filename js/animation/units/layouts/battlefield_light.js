@@ -7,10 +7,11 @@ define(
     './board'
   ], function(shader, char, sprim, unit_skybox, board)
   {
-    return function( socket, size )
+    return function( socket, size, InfoId )
     {
       this.Size = size;
       this.Socket = socket;
+      this.InfoId = InfoId;
 
       this.LoadFigure = function( Ani, N, Dir, Src, zc, zd, xc, Name, Side, Scale, Material )
       {
@@ -24,11 +25,13 @@ define(
               Prim: new char().CreateFigure(Name, Scale, Material),
               Type: Stats.Type, Side: Side,
               Sight: Stats.Sight, Radius: Stats.Radius, Speed: Stats.Speed,
-              Health: Stats.Health, Attack: Stats.Attack
+              Health: Stats.Health, Attack: Stats.Attack, Stamina: -1
             };
             figure.Prim.Mesh.position.add(new THREE.Vector3(xc, 0, zd * i + zc)).add(Src);
             self.Board.Set(zd * i + zc + Src.z, xc + Src.x, figure);
             Ani.AddPrimitive(figure.Prim);
+            self.Board.Refresh();
+            self.InfoUpdate();
           }
         });
       };
@@ -196,13 +199,22 @@ define(
           });
         this.Socket.on('turn', function()
           {
-            self.Turn = !self.Turn;
+            self.Turn = true;
             self.Board.Move(self.Size - 1, self.Size - 1, self.Size - 1, self.Size - 1);
             self.UpdateHelpers(self.Size - 1, self.Size - 1);
             self.SelectorFigure.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
             self.SelectorFigure.Mesh.position.y = 0.0015;
             self.Selector.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
             self.Selector.Mesh.position.y = 0.001;
+            self.Board.Refresh();
+            self.InfoUpdate();
+          });
+        this.Socket.on('win', function(data)
+          {
+            if (data == 'Light')
+              window.location.replace("light_win.html");
+            else
+              window.location.replace("dark_win.html");
           });
       };
 
@@ -227,14 +239,46 @@ define(
           var z = Math.fmod(i, this.Size);
           var x = Math.floor(i / this.Size);
           var dist = Math.abs(z - zf) + Math.abs(x - xf);
-          this.Helpers[i].Mesh.visible = (f != null) && (dist <= f.Speed);
-          if (this.Board.Get(z, x) != null)
-            this.Helpers[i].Mesh.material =
-              (this.Board.Get(z, x).Side == f.Side ||
-              dist > f.Radius ? this.HelpMaterial : this.AttackMaterial);
+          if (f != null)
+          {
+            this.Helpers[i].Mesh.visible = (dist <= f.Speed || dist <= f.Radius);
+            if (this.Board.Get(z, x) != null)
+              if (this.Board.Get(z, x).Side == f.Side)
+                if (dist <= f.Stamina)
+                  this.Helpers[i].Mesh.material = this.HelpMaterial;
+                else
+                  this.Helpers[i].Mesh.visible = false;
+              else
+              if (dist <= f.Radius && f.Stamina > 0)
+                this.Helpers[i].Mesh.material = this.AttackMaterial;
+              else
+              if (dist <= f.Stamina)
+                this.Helpers[i].Mesh.material = this.HelpMaterial;
+              else
+                this.Helpers[i].Mesh.visible = false;
+            else
+            if (dist <= f.Stamina)
+              this.Helpers[i].Mesh.material = this.HelpMaterial;
+            else
+              this.Helpers[i].Mesh.visible = false;
+          }
           else
-            this.Helpers[i].Mesh.material = this.HelpMaterial;
+            this.Helpers[i].Mesh.visible = false;
         }
+      };
+
+      this.InfoUpdate = function()
+      {
+        var f = this.Board.Get(this.Selector.Mesh.position.z, this.Selector.Mesh.position.x);
+        var el = $('#' + InfoId);
+        el.empty();
+        if (f == null)
+          return;
+        el.append("<p>Type: " + f.Type + "</p>");
+        el.append("<p>Health: " + f.Health + "</p>");
+        el.append("<p>Speed: " + f.Speed + "</p>");
+        el.append("<p>Range: " + f.Radius + "</p>");
+        el.append("<p>Attack: " + f.Attack + "</p>");
       };
 
       this.Response = function( Ani )
@@ -243,21 +287,25 @@ define(
         {
           this.Selector.Mesh.position.x--;
           this.PrevMov = Ani.Timer.GlobalTime;
+          this.InfoUpdate();
         }
         else if (Ani.Keyboard.Keys[40] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
           this.Selector.Mesh.position.x++;
           this.PrevMov = Ani.Timer.GlobalTime;
+          this.InfoUpdate();
         }
         if (Ani.Keyboard.Keys[37] == 1 && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
           this.Selector.Mesh.position.z++;
           this.PrevMov = Ani.Timer.GlobalTime;
+          this.InfoUpdate();
         }
         else if (Ani.Keyboard.Keys[39] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
           this.Selector.Mesh.position.z--;
           this.PrevMov = Ani.Timer.GlobalTime;
+          this.InfoUpdate();
         }
         if (Ani.Keyboard.Keys[107])
           this.Scale *= 0.9;
@@ -276,7 +324,6 @@ define(
           switch (m)
           {
             case 'fail':
-            case 'attack':
               break;
             case 'move':
             case 'stop':
@@ -286,7 +333,11 @@ define(
               this.SelectorFigure.Mesh.position.y = 0.0015;
               break;
             case 'kill':
+            case 'attack':
               this.UpdateHelpers(p0.z, p0.x);
+              break;
+            case 'win':
+              this.Socket.emit('win', 'Light');
               break;
           }
         }
@@ -294,6 +345,7 @@ define(
         if (this.Turn && Ani.Keyboard.Keys[45] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
           this.Socket.emit('turn');
+          this.Turn = false;
           this.Socket.emit('chat message', {message: "Darkness, it's your turn now!", user: 'LIGHT'});
         }
       };

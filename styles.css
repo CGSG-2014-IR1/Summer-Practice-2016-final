@@ -1,18 +1,45 @@
 table
 {
-  border-color: black;
+  border: 1px solid black;
   text-align: center;
+  height: 100%;
+  width: 100%;
 }
 
 tr
 {
-  border: 1px;
-  border-color: black;
+  border: 1px solid black;
   text-align: center;
   vertical-align: bottom;
 }
 
+td
+{
+  border: 1px solid black;
+  text-align: center;
+}
+
 ul
 {
-  text-align :left;
+  text-align: left;
+  background-color: white;
+}
+
+.figure_info
+{
+  text-align: left;
+  vertical-align: text-top;
+  height: 20%;
+}
+
+.dark_win
+{
+  background-image: url("assets/images/win/dark.jpg");
+  text-align: center;
+}
+
+.light_win
+{
+  background-image: url("assets/images/win/light.jpg");
+  text-align: center;
 }

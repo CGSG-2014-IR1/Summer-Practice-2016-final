@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>Darkness wins!</title>
+
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <script src="js/api/jquery.js"></script>
+  <script src="js/api/socket.io.js"></script>
+  <script>
+    function InitChat( socket )
+    {
+      $('#chat_form').submit(function()
+      {
+        var inp = $('#msg');
+        socket.emit('chat message', {message: inp.val(), user: $("#name").val()});
+        inp.val('');
+        return false;
+      });
+      socket.on('chat message', function(msg)
+      {
+        var msgs = $('#messages');
+        msgs.append("<li>" + "[" + msg.user + "]: " + msg.message);
+        if ($('#messages li').length > 30)
+          $('#messages li').eq(0).remove();
+      });
+    }
+
+    $(function()
+    {
+      var socket = io.connect();
+      InitChat(socket);
+    })
+  </script>
+</head>
+
+<body>
+<table class="dark_win" width="30%">
+  <tr>
+    <td width="20%">
+      <ul id="messages"></ul>
+      <form id="chat_form" action="">
+        <input type="text" id="msg" autocomplete="off"/><button>Say</button>
+        <br>
+        <input type="text" id="name" autocomplete="on">Your name</input>
+      </form>
+    </td>
+  </tr>
+</table>
+</body>
+
+</html>

@@ -64,7 +64,7 @@
           });
         socket.on('side', function(side)
           {
-            // Opponent had schosen side
+            // Opponent had chosen side
             if (side === 'light')
             {
               socket.emit('side', 'dark');
@@ -81,7 +81,7 @@
 </head>
 
 <body>
-  <table width="100%" height="100%">
+  <table>
     <tr>
       <td width="33%" height="100%" id="light_side_img_holder">
       </td>
