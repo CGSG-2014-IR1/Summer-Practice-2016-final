@@ -39,13 +39,11 @@
         $('#light_side_img_holder').click(function()
           {
             socket.emit('side', 'light');
-            window.location.replace("light.html");
           });
 
         $('#dark_side_img_holder').click(function()
           {
             socket.emit('side', 'dark');
-            window.location.replace("dark.html");
           });
 
         $('#chat_form').submit(function()

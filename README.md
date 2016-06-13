@@ -9,5 +9,13 @@ My final summer practice task.
   <li> Click on image to choose side
   <li> Arrow buttons to move selector, Enter to confirm movement
   <li> Insert to end turn
-  <li> Important - do NOT refresh pages, this will crash a game (figures reset positions)
+</ol>
+<br>
+<p>Balance</p>
+<p>All figures' stats can be tweaked in /assets/figures/*.json</p>
+<br>
+<p>Bugs</p>
+<ol>
+  <li> If >= 3 connections created too fast, spectator filter may fail
+  <li> Due to asynchronous file readings 'extra' figures may appear on board. It happens randomly, page refresh usually helps.
 </ol>

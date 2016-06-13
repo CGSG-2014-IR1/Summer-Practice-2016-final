@@ -155,6 +155,26 @@ define(
             else
               window.location.replace("dark_win.html");
           });
+        this.Socket.emit('sync');
+        this.Socket.on('sync', function(sboard)
+          {
+            if (!sboard)
+              self.Socket.emit('init', self.Board);
+            else
+            {
+              console.log(self.Prims);
+              self.Board.Copy(Ani, sboard, self.Prims);
+              self.Board.Side = 'Dark';
+              self.Turn = (sboard.Side == 'Light');
+              self.UpdateHelpers(0, 0);
+              self.SelectorFigure.Mesh.position.set(0, 0, 0);
+              self.SelectorFigure.Mesh.position.y = 0.0015;
+              self.Selector.Mesh.position.set(0, 0, 0);
+              self.Selector.Mesh.position.y = 0.001;
+              self.Board.Refresh();
+              self.InfoUpdate();
+            }
+          });
       };
 
       this.Render = function( Ani )

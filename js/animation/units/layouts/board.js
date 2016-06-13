@@ -14,11 +14,13 @@ return function( size, side )
      * @param {Object} Ani - animation structure
      * @param {Object} Board - board to copy
      * @param {Object} Prims - primitives object
+     * @param {Number} [offset = this.Size * this.Size + 4]
      */
-    this.Copy = function( Ani, Board, Prims )
+    this.Copy = function( Ani, Board, Prims, offset )
     {
-      Prims.Data = [];
-      Ani.Scene.children.splice(this.Size * this.Size + 4, Ani.Scene.children.length);
+      Prims.Data.splice(0, this.Size * this.Size);
+      this.Board.splice(0, this.Size * this.Size);
+      Ani.Scene.children.splice(offset ? offset : this.Size * this.Size + 4, Ani.Scene.children.length);
       for (var j = 0; j < this.Size * this.Size; j++)
       {
         this.Board[j] = Board.Board[j];

@@ -61,6 +61,7 @@ var server = http.createServer(function(request, response)
     }
   });
 
+var Board = null;
 server.listen(8000);
 var listener = io.listen(server);
 listener.sockets.on('connection', function(socket)
@@ -77,19 +78,34 @@ listener.sockets.on('connection', function(socket)
 
     socket.on('side', function(data)
       {
-        if (socket === Sockets[0])
-          Sockets[1].emit('side', data);
-        else
-          Sockets[0].emit('side', data);
+        if (Sockets.length >= 2)
+        {
+          if (socket === Sockets[0])
+          {
+            Sockets[0].emit('side', data == 'Light' ? 'Dark' : 'Light');
+            Sockets[1].emit('side', data);
+          }
+          else
+          {
+            Sockets[0].emit('side', data);
+            Sockets[1].emit('side', data == 'Light' ? 'Dark' : 'Light');
+          }
+        }
       });
 
-    /*socket.on('move', function(data)
-      {
-        socket.broadcast.emit('move', data);
-      });*/
     socket.on('turn', function(board)
       {
         socket.broadcast.emit('turn', board);
+        Board = board;
+      });
+    socket.on('init', function(board)
+      {
+        Board = board;
+        board.Side = 'Light';
+      });
+    socket.on('sync', function()
+      {
+        socket.emit('sync', Board);
       });
     socket.on('win', function(data)
       {
