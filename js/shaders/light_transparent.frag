@@ -24,7 +24,7 @@ void main()
 {
   vec3 dir = normalize(Pos - CameraPos);
   vec3 dnorm = Norm;
-  vec3 dist = noise(Pos * Norm);
+  vec3 dist = noise(Pos);
   dnorm += dist;
 
   vec4 refr = texture2D(TextureRefraction, PosS + (dnorm.xz + dnorm.xy + dnorm.yz) * DistortionStrength / 3.0);

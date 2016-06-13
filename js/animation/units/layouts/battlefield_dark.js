@@ -94,18 +94,6 @@ define(
         Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));
         Ani.Camera.fov = 60;
 
-        var light = new THREE.DirectionalLight(0xffffff);
-        light.position.set(0, 5, -5);
-        light.castShadow = true;
-        light.shadow.camera.near = 0.1;
-        light.shadow.camera.far = 10;
-        light.shadow.camera.left = -2;
-        light.shadow.camera.right = 2;
-        light.shadow.camera.top = 2;
-        light.shadow.camera.bottom = -2;
-        light.shadow.mapSize.width = 512;
-        light.shadow.mapSize.height = 512;
-
         this.Base = new sprim().CreatePlane(this.Size, this.Size, new THREE.ShaderMaterial(
           {
             uniforms: {
@@ -191,7 +179,6 @@ define(
 
         this.PrevMov = Ani.Timer.GlobalTime;
         this.Scale = 1;
-
 
         var self = this;
         this.Socket.on('move', function(data)
@@ -284,25 +271,33 @@ define(
 
       this.Response = function( Ani )
       {
-        if (Ani.Keyboard.Keys[38] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
+        if (Ani.Keyboard.Keys[38] &&
+          (Ani.Timer.GlobalTime - this.PrevMov > 0.15) &&
+          (this.Selector.Mesh.position.x < this.Size - 1))
         {
           this.Selector.Mesh.position.x++;
           this.PrevMov = Ani.Timer.GlobalTime;
           this.InfoUpdate();
         }
-        else if (Ani.Keyboard.Keys[40] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
+        else if (Ani.Keyboard.Keys[40] &&
+          (Ani.Timer.GlobalTime - this.PrevMov > 0.15) &&
+          (this.Selector.Mesh.position.x > 0))
         {
           this.Selector.Mesh.position.x--;
           this.PrevMov = Ani.Timer.GlobalTime;
           this.InfoUpdate();
         }
-        if (Ani.Keyboard.Keys[37] == 1 && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
+        if (Ani.Keyboard.Keys[37] == 1 &&
+          (Ani.Timer.GlobalTime - this.PrevMov > 0.15) &&
+          (this.Selector.Mesh.position.z > 0))
         {
           this.Selector.Mesh.position.z--;
           this.PrevMov = Ani.Timer.GlobalTime;
           this.InfoUpdate();
         }
-        else if (Ani.Keyboard.Keys[39] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
+        else if (Ani.Keyboard.Keys[39] &&
+          (Ani.Timer.GlobalTime - this.PrevMov > 0.15) &&
+          (this.Selector.Mesh.position.z < this.Size - 1))
         {
           this.Selector.Mesh.position.z++;
           this.PrevMov = Ani.Timer.GlobalTime;

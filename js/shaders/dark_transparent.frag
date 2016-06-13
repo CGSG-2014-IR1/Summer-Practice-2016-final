@@ -25,13 +25,13 @@ void main()
 {
   vec3 dir = normalize(Pos - CameraPos);
   vec3 dnorm = Norm;
-  vec3 dist = noise(Pos * Norm + vec3(Time, Time, Time) * DistortionStrength);
+  vec3 dist = noise(Pos + vec3(sin(Time), cos(Time), tan(Time)));
   dnorm += dist;
 
   vec4 refr = texture2D(TextureRefraction, PosS + (dnorm.xz + dnorm.xy + dnorm.yz) * DistortionStrength / 3.0);
-  gl_FragColor = vec4(DiffuseColor, 1.0) * vec4(refr.xyz * (rand(PosS.xy + vec2(Time, Time)) > 0.5 ? 1.0 : 0.0), 1.0);
+  gl_FragColor = vec4(DiffuseColor, 1.0) * vec4(refr.xyz * (rand(mod(PosS.xy, vec2(0.1, 0.1)) + vec2(sin(Time), cos(Time))) > 0.7 ? 1.0 : 0.0), 1.0);
   vec3 d1 = normalize(-Pos + vec3(0, 0, 5));
   vec3 d2 = normalize(-Pos + vec3(10, 0, 5));
-  gl_FragColor.rgb *= 0.33 + dot(d1, Norm) * 0.33 + dot(d2, Norm) * 0.33;
+  //gl_FragColor.rgb *= 0.33 + dot(d1, Norm) * 0.33 + dot(d2, Norm) * 0.33;
   //gl_FragColor = refr;
 }

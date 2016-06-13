@@ -94,6 +94,7 @@ listener.sockets.on('connection', function(socket)
     socket.on('win', function(data)
       {
         listener.emit('win', data);
+        setTimeout(function(){ process.exit() }, 60 * 1000);
       });
   });
 
