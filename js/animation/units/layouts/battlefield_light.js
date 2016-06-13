@@ -1,11 +1,11 @@
 define(
   [
-    'res/shader',
     'prim/characters',
     'prim/sprim',
     'units/environment/unit_skybox',
-    './board'
-  ], function(shader, char, sprim, unit_skybox, board)
+    './board',
+    'res/mtllib',
+  ], function(char, sprim, unit_skybox, board, mtllib)
   {
     return function( socket, size, InfoId )
     {
@@ -13,7 +13,20 @@ define(
       this.Socket = socket;
       this.InfoId = InfoId;
 
-      this.LoadFigure = function( Ani, N, Dir, Src, zc, zd, xc, Name, Side, Scale, Material )
+      /**
+       * Load figure from .json file.
+       * @param {Object} Prims - primitives structure
+       * @param {Number} N - number of figures to generate
+       * @param {THREE.Vector3} Src - generation offset
+       * @param {Number} zc - generation path parameter
+       * @param {Number} zd - generation path parameter
+       * @param {Number} xc - generation path parameter: position = [zd * i + zc, 0, xc] + Src
+       * @param {String} Name
+       * @param {String} Side
+       * @param {Number} Scale
+       * @param {THREE.Material} Material
+       */
+      this.LoadFigure = function( Prims, N, Dir, Src, zc, zd, xc, Name, Side, Scale )
       {
         var self = this;
         $.getJSON("assets/figures/" + Name + ".json", function(Stats)
@@ -22,68 +35,52 @@ define(
           {
             var figure =
             {
-              Prim: new char().CreateFigure(Name, Scale, Material),
               Type: Stats.Type, Side: Side,
               Sight: Stats.Sight, Radius: Stats.Radius, Speed: Stats.Speed,
               Health: Stats.Health, Attack: Stats.Attack, Stamina: -1
             };
-            figure.Prim.Mesh.position.add(new THREE.Vector3(xc, 0, zd * i + zc)).add(Src);
             self.Board.Set(zd * i + zc + Src.z, xc + Src.x, figure);
-            Ani.AddPrimitive(figure.Prim);
+            Prims.Add(zd * i + zc + Src.z + (xc + Src.x) * self.Size, figure);
             self.Board.Refresh();
             self.InfoUpdate();
           }
         });
       };
 
-      this.PlaceSide = function( Ani, Src, Dir, Material, Side, Scale )
+      /**
+       * Place oni side figures.
+       * @param {Object} Prims - primitives structure
+       * @param {THREE.Vector3} Src
+       * @param {THREE.Vector3} Dir
+       * @param {THREE.Material} Material
+       * @param {String} Side
+       * @param {Number} Scale
+       */
+      this.PlaceSide = function( Prims, Src, Dir, Side, Scale )
       {
-        this.LoadFigure(Ani,  2, Dir, Src,         0, Dir.z * 9,     0, 'tower', Side, Scale, Material);
-        this.LoadFigure(Ani,  2, Dir, Src, Dir.z * 1, Dir.z * 7,     0, 'knight', Side, Scale, Material);
-        this.LoadFigure(Ani,  2, Dir, Src, Dir.z * 2, Dir.z * 5,     0, 'slayer', Side, Scale, Material);
-        this.LoadFigure(Ani,  2, Dir, Src, Dir.z * 3, Dir.z * 3,     0,   'mage', Side, Scale, Material);
-        this.LoadFigure(Ani,  1, Dir, Src, Dir.z * 4,         0,     0,  'queen', Side, Scale, Material);
-        this.LoadFigure(Ani,  1, Dir, Src, Dir.z * 5,         0,     0,   'king', Side, Scale, Material);
-        this.LoadFigure(Ani, 10, Dir, Src,         0, Dir.z * 1, Dir.x,   'pawn', Side, Scale, Material);
+        this.LoadFigure(Prims,  2, Dir, Src,         0, Dir.z * 9,     0,  'tower', Side, Scale);
+        this.LoadFigure(Prims,  2, Dir, Src, Dir.z * 1, Dir.z * 7,     0, 'knight', Side, Scale);
+        this.LoadFigure(Prims,  2, Dir, Src, Dir.z * 2, Dir.z * 5,     0, 'slayer', Side, Scale);
+        this.LoadFigure(Prims,  2, Dir, Src, Dir.z * 3, Dir.z * 3,     0,   'mage', Side, Scale);
+        this.LoadFigure(Prims,  1, Dir, Src, Dir.z * 4,         0,     0,  'queen', Side, Scale);
+        this.LoadFigure(Prims,  1, Dir, Src, Dir.z * 5,         0,     0,   'king', Side, Scale);
+        this.LoadFigure(Prims, 10, Dir, Src,         0, Dir.z * 1, Dir.x,   'pawn', Side, Scale);
       };
 
-      this.InitFigures = function( Ani )
+      /**
+       * Place figures on board in default position
+       * @param {Object} Prims
+       */
+      this.InitFigures = function( Prims )
       {
-
-        this.MaterialDark = new THREE.ShaderMaterial(
-          {
-            uniforms: {
-              "TextureRefraction": {type: "t", value: Ani.Render.RefractionRenderTarget.texture},
-              "CameraPos": {type: "v3", value: Ani.Camera.position},
-              "DiffuseColor": {type: "v3", value: new THREE.Vector3(0.6, 0.6, 0.6)},
-              "DistortionStrength": {type: "f", value: 0.05},
-              "Time": {type: "f", value: Ani.Timer.Time}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/dark_transparent.vert"),
-            fragmentShader: new shader().Load("../js/shaders/dark_transparent.frag"),
-            transparent: true
-          });
-        this.MaterialLight = new THREE.ShaderMaterial(
-          {
-            uniforms: {
-              "TextureRefraction": {type: "t", value: Ani.Render.RefractionRenderTarget.texture},
-              "CameraPos": {type: "v3", value: Ani.Camera.position},
-              "DiffuseColor": {type: "v3", value: new THREE.Vector3(0.9, 0.9, 0.9)},
-              "DistortionStrength": {type: "f", value: 0.05}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/light_transparent.vert"),
-            fragmentShader: new shader().Load("../js/shaders/light_transparent.frag"),
-            transparent: true
-          });
-
-        this.PlaceSide(Ani, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 1), this.MaterialDark, 'Dark', 0.3);
-        this.PlaceSide(Ani, new THREE.Vector3(this.Size - 1, 0, this.Size - 1), new THREE.Vector3(-1, 0, -1), this.MaterialLight, 'Light', 0.3);
+        this.PlaceSide(Prims, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 1), 'Dark', 0.3);
+        this.PlaceSide(Prims, new THREE.Vector3(this.Size - 1, 0, this.Size - 1), new THREE.Vector3(-1, 0, -1), 'Light', 0.3);
       };
 
       this.Init = function( Ani )
       {
+        var self = this;
+        this.Materials = new mtllib();
         this.Board = new board(this.Size, 'Light');
         this.Turn = false;
         this.UnitSkybox = new unit_skybox("../assets/images/skybox/battle1/", ".bmp");
@@ -92,74 +89,24 @@ define(
         Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));
         Ani.Camera.fov = 60;
 
-        this.Base = new sprim().CreatePlane(this.Size, this.Size, new THREE.ShaderMaterial(
+        this.Base = new sprim().CreatePlane(this.Size, this.Size, this.Materials.Field);
+        var intervalid = setInterval(function()
+        {
+          if (self.Materials.Field)
           {
-            uniforms: {
-              "Color1": {type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5)},
-              "Color2": {type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1)}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/environment/field.vert"),
-            fragmentShader: new shader().Load("../js/shaders/environment/field.frag"),
-            transparent: false
-          }));
+            self.Base.Mesh.material = self.Materials.Field;
+            clearInterval(intervalid);
+          }
+        }, 250);
         this.Base.Mesh.position.set(this.Size / 2.0 - 0.5, 0, this.Size / 2.0 - 0.5);
-        this.Selector = new sprim().CreatePlane(1, 1, new THREE.ShaderMaterial(
-          {
-            uniforms: {
-              "ColorBase": {type: "v3", value: new THREE.Vector3(0.3, 0.3, 0.2)},
-              "ColorAdd": {type: "v3", value: new THREE.Vector3(0.2, 0.2, 0.1)},
-              "Time": {type: "f", value: Ani.Timer.GlobalTime},
-              "Alpha": {type: "f", value: 0.5}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/environment/selector.vert"),
-            fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
-            transparent: true
-          }));
+        this.Selector = new sprim().CreatePlane(1, 1,
+          this.Materials.Selector(new THREE.Vector3(0.3, 0.3, 0.2), new THREE.Vector3(0.2, 0.2, 0.1), 0.5));
         this.Selector.Mesh.position.set(this.Size - 1, 0.001, this.Size - 1);
-        this.SelectorFigure = new sprim().CreatePlane(1, 1, new THREE.ShaderMaterial(
-          {
-            uniforms: {
-              "ColorBase": {type: "v3", value: new THREE.Vector3(0.5, 0.1, 0.1)},
-              "ColorAdd": {type: "v3", value: new THREE.Vector3(0.1, 0.0, 0.0)},
-              "Time": {type: "f", value: Ani.Timer.GlobalTime},
-              "Alpha": {type: "f", value: 0.5}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/environment/selector.vert"),
-            fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
-            transparent: true
-          }));
+        this.SelectorFigure = new sprim().CreatePlane(1, 1,
+          this.Materials.Selector(new THREE.Vector3(0.5, 0.1, 0.1), new THREE.Vector3(0.1, 0.0, 0.0), 0.33));
         this.SelectorFigure.Mesh.position.set(this.Size - 1, 0.0015, this.Size - 1);
-        this.HelpMaterial = new THREE.ShaderMaterial(
-          {
-            uniforms:
-            {
-              "ColorBase": {type: "v3", value: new THREE.Vector3(0.1, 0.2, 0.1)},
-              "ColorAdd": {type: "v3", value: new THREE.Vector3(0.1, 0.3, 0.1)},
-              "Time": {type: "f", value: Ani.Timer.GlobalTime},
-              "Alpha": {type: "f", value: 0.33}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/environment/selector.vert"),
-            fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
-            transparent: true
-          });
-        this.AttackMaterial = new THREE.ShaderMaterial(
-          {
-            uniforms:
-            {
-              "ColorBase": {type: "v3", value: new THREE.Vector3(0.5, 0.2, 0.1)},
-              "ColorAdd": {type: "v3", value: new THREE.Vector3(0.5, 0.3, 0.1)},
-              "Time": {type: "f", value: Ani.Timer.GlobalTime},
-              "Alpha": {type: "f", value: 0.5}
-            },
-            side: THREE.DoubleSide,
-            vertexShader: new shader().Load("../js/shaders/environment/selector.vert"),
-            fragmentShader: new shader().Load("../js/shaders/environment/selector.frag"),
-            transparent: true
-          });
+        this.HelpMaterial = this.Materials.Selector(new THREE.Vector3(0.1, 0.2, 0.1), new THREE.Vector3(0.1, 0.3, 0.1), 0.33);
+        this.AttackMaterial = this.Materials.Selector(new THREE.Vector3(0.5, 0.2, 0.1), new THREE.Vector3(0.5, 0.3, 0.1), 0.5);
         Math.fmod = function (a,b) { return Number((a - (Math.floor(a / b) * b)).toPrecision(8)); };
         this.Helpers = [];
         for (var i = 0; i < this.Size * this.Size; i++)
@@ -177,18 +124,24 @@ define(
         this.PrevMov = Ani.Timer.GlobalTime;
         this.Scale = 1;
 
-        this.InitFigures(Ani);
-
-        this.UpdateHelpers(this.Size - 1, this.Size - 1);
-        var self = this;
-        this.Socket.on('move', function(data)
+        this.Prims =
           {
-            self.Board.MoveEnemy(Math.ceil(data[0]), Math.ceil(data[1]), Math.ceil(data[2]), Math.ceil(data[3]));
-          });
-        this.Socket.on('turn', function()
+            Data: [],
+            Ani: Ani,
+            Add: function( ind, figure )
+            {
+              this.Data[ind] = new char().CreateFigure(figure.Type, 0.3, figure.Side == 'Dark' ? self.Materials.Dark : self.Materials.Light);
+              this.Data[ind].Mesh.position.add(new THREE.Vector3(Math.floor(ind / self.Size), 0, Math.fmod(ind, self.Size)));
+              this.Ani.AddPrimitive(this.Data[ind]);
+            }
+          };
+        this.InitFigures(this.Prims);
+        this.UpdateHelpers(this.Size - 1, this.Size - 1);
+
+        this.Socket.on('turn', function(Board)
           {
             self.Turn = true;
-            self.Board.Move(self.Size - 1, self.Size - 1, self.Size - 1, self.Size - 1);
+            self.Board.Copy(Ani, Board, self.Prims);
             self.UpdateHelpers(self.Size - 1, self.Size - 1);
             self.SelectorFigure.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
             self.SelectorFigure.Mesh.position.y = 0.0015;
@@ -216,7 +169,14 @@ define(
         Ani.Camera.position.copy(this.Selector.Mesh.position).add(shift);
         Ani.Camera.lookAt(this.Selector.Mesh.position);
 
-        this.MaterialDark.uniforms.Time.value = Ani.Timer.GlobalTime;
+        this.Prims.Data.forEach(function(prim)
+        {
+          if (!prim)
+            return;
+          if (prim.Mesh.material.uniforms.Time)
+            prim.Mesh.material.uniforms.Time.value = Ani.Timer.GlobalTime;
+          prim.Mesh.material.uniforms.TextureRefraction.value = Ani.Render.RefractionRenderTarget.texture;
+        });
       };
 
       this.UpdateHelpers = function( zf, xf )
@@ -237,18 +197,18 @@ define(
                 else
                   this.Helpers[i].Mesh.visible = false;
               else
-              if (dist <= f.Radius && f.Stamina > 0)
-                this.Helpers[i].Mesh.material = this.AttackMaterial;
-              else
+                if (dist <= f.Radius && f.Stamina > 0)
+                  this.Helpers[i].Mesh.material = this.AttackMaterial;
+                else
+                  if (dist <= f.Stamina)
+                    this.Helpers[i].Mesh.material = this.HelpMaterial;
+                  else
+                    this.Helpers[i].Mesh.visible = false;
+            else
               if (dist <= f.Stamina)
                 this.Helpers[i].Mesh.material = this.HelpMaterial;
               else
                 this.Helpers[i].Mesh.visible = false;
-            else
-            if (dist <= f.Stamina)
-              this.Helpers[i].Mesh.material = this.HelpMaterial;
-            else
-              this.Helpers[i].Mesh.visible = false;
           }
           else
             this.Helpers[i].Mesh.visible = false;
@@ -308,7 +268,6 @@ define(
         else if (Ani.Keyboard.Keys[109])
           this.Scale *= 1.1;
 
-
         if (this.Turn && Ani.Keyboard.Keys[13] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
           var p0 = new THREE.Vector3().copy(this.SelectorFigure.Mesh.position);
@@ -316,7 +275,7 @@ define(
           this.Socket.emit('move', [p0.z, p0.x, p1.z, p1.x]);
           this.PrevMov = Ani.Timer.GlobalTime;
 
-          var m = this.Board.Move(p0.z, p0.x, p1.z, p1.x);
+          var m = this.Board.Move(p0.z, p0.x, p1.z, p1.x, this.Prims);
           switch (m)
           {
             case 'fail':
@@ -340,7 +299,7 @@ define(
 
         if (this.Turn && Ani.Keyboard.Keys[45] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
-          this.Socket.emit('turn');
+          this.Socket.emit('turn', this.Board);
           this.Turn = false;
           this.Socket.emit('chat message', {message: "Darkness, it's your turn now!", user: 'LIGHT'});
         }

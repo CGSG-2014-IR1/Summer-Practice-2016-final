@@ -10,6 +10,8 @@ varying vec2 PosS;
 void main( void )
 {
   vec3 col = Color1;
+  if ((mod(floor(Pos.x), 2.0) == 0.0) ^^ (mod(floor(Pos.y), 2.0) == 0.0))
+    col = Color2;
   if (min(Pos.x - floor(Pos.x), ceil(Pos.x) - Pos.x) < 0.05 ||
       min(Pos.y - floor(Pos.y), ceil(Pos.y) - Pos.y) < 0.05)
     col = vec3(0, 0, 0);

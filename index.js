@@ -83,13 +83,13 @@ listener.sockets.on('connection', function(socket)
           Sockets[0].emit('side', data);
       });
 
-    socket.on('move', function(data)
+    /*socket.on('move', function(data)
       {
         socket.broadcast.emit('move', data);
-      });
-    socket.on('turn', function()
+      });*/
+    socket.on('turn', function(board)
       {
-        socket.broadcast.emit('turn');
+        socket.broadcast.emit('turn', board);
       });
     socket.on('win', function(data)
       {

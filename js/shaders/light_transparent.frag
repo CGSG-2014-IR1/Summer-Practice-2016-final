@@ -1,8 +1,6 @@
 precision mediump float;
 
 uniform sampler2D TextureRefraction;
-uniform vec3 CameraPos;
-uniform float RefractionCoefficient;
 uniform float DistortionStrength;
 uniform vec3 DiffuseColor;
 
@@ -22,7 +20,6 @@ vec3 noise( vec3 v )
 
 void main()
 {
-  vec3 dir = normalize(Pos - CameraPos);
   vec3 dnorm = Norm;
   vec3 dist = noise(Pos);
   dnorm += dist;

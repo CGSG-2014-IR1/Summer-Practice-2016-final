@@ -1,8 +1,6 @@
 precision mediump float;
 
 uniform sampler2D TextureRefraction;
-uniform vec3 CameraPos;
-uniform float RefractionCoefficient;
 uniform float DistortionStrength;
 uniform vec3 DiffuseColor;
 uniform float Time;
@@ -23,7 +21,6 @@ vec3 noise( vec3 v )
 
 void main()
 {
-  vec3 dir = normalize(Pos - CameraPos);
   vec3 dnorm = Norm;
   vec3 dist = noise(Pos + vec3(sin(Time), cos(Time), tan(Time)));
   dnorm += dist;
@@ -32,6 +29,5 @@ void main()
   gl_FragColor = vec4(DiffuseColor, 1.0) * vec4(refr.xyz * (rand(mod(PosS.xy, vec2(0.1, 0.1)) + vec2(sin(Time), cos(Time))) > 0.7 ? 1.0 : 0.0), 1.0);
   vec3 d1 = normalize(-Pos + vec3(0, 0, 5));
   vec3 d2 = normalize(-Pos + vec3(10, 0, 5));
-  //gl_FragColor.rgb *= 0.33 + dot(d1, Norm) * 0.33 + dot(d2, Norm) * 0.33;
-  //gl_FragColor = refr;
+
 }

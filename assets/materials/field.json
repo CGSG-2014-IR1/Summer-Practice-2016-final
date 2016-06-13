@@ -1,0 +1,6 @@
+{
+  "Color1": [0.3, 0.1, 0.1],
+  "Color2": [0.5, 0.5, 0.3],
+  "VertexShader": "../js/shaders/environment/field.vert",
+  "FragmentShader": "../js/shaders/environment/field.frag"
+}
