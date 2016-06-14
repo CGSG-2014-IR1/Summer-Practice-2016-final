@@ -34,12 +34,12 @@ ul
 
 .dark_win
 {
-  background-image: url("assets/images/win/dark.jpg");
+  background-image: url("assets/textures/win/dark.jpg");
   text-align: center;
 }
 
 .light_win
 {
-  background-image: url("assets/images/win/light.jpg");
+  background-image: url("assets/textures/win/light.jpg");
   text-align: center;
 }

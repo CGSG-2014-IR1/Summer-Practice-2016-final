@@ -35,6 +35,7 @@ define(
             fragmentShader: new shader().Load("../js/shaders/dark_transparent.frag"),
             transparent: true
           });
+        this.Dark.refractive = true;
         this.Light = new THREE.ShaderMaterial(
           {
             uniforms: {
@@ -47,6 +48,7 @@ define(
             fragmentShader: new shader().Load("../js/shaders/light_transparent.frag"),
             transparent: true
           });
+        this.Light.refractive = true;
 
         /**
          * Create selector material.

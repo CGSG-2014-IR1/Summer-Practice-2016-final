@@ -4,7 +4,7 @@ define(
     'prim/sprim',
     'units/environment/unit_skybox',
     './board',
-    'res/mtllib',
+    'res/mtllib'
   ], function(char, sprim, unit_skybox, board, mtllib)
   {
     return function( socket, size, InfoId )
@@ -24,7 +24,6 @@ define(
        * @param {String} Name
        * @param {String} Side
        * @param {Number} Scale
-       * @param {THREE.Material} Material
        */
       this.LoadFigure = function( Prims, N, Dir, Src, zc, zd, xc, Name, Side, Scale )
       {
@@ -83,7 +82,7 @@ define(
         this.Materials = new mtllib();
         this.Board = new board(this.Size, 'Light');
         this.Turn = false;
-        this.UnitSkybox = new unit_skybox("../assets/images/skybox/battle1/", ".bmp");
+        this.UnitSkybox = new unit_skybox("../assets/textures/skybox/battle1/", ".bmp");
         Ani.UnitAdd(this.UnitSkybox);
         Ani.Camera.position.set(-1, 4, -2);
         Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -135,7 +134,6 @@ define(
               this.Ani.AddPrimitive(this.Data[ind]);
             }
           };
-        this.InitFigures(this.Prims);
         this.UpdateHelpers(this.Size - 1, this.Size - 1);
 
         this.Socket.on('turn', function(Board)
@@ -173,6 +171,8 @@ define(
               self.Board.Refresh();
               self.InfoUpdate();
             }
+            else
+              self.InitFigures(self.Prims);
           });
       };
 
@@ -292,7 +292,7 @@ define(
           this.Socket.emit('move', [p0.z, p0.x, p1.z, p1.x]);
           this.PrevMov = Ani.Timer.GlobalTime;
 
-          var m = this.Board.Move(p0.z, p0.x, p1.z, p1.x, this.Prims);
+          var m = this.Board.Move(p0.z, p0.x, p1.z, p1.x, this.Prims, Ani);
           switch (m)
           {
             case 'fail':
@@ -307,6 +307,7 @@ define(
             case 'kill':
             case 'attack':
               this.UpdateHelpers(p0.z, p0.x);
+              this.InfoUpdate();
               break;
             case 'win':
               this.Socket.emit('win', 'Light');

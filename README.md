@@ -17,5 +17,4 @@ My final summer practice task.
 <p>Bugs</p>
 <ol>
   <li> If >= 3 connections created too fast, spectator filter may fail
-  <li> Due to asynchronous file readings 'extra' figures may appear on board. It happens randomly, page refresh usually helps.
 </ol>

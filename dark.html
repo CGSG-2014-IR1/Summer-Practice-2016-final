@@ -40,11 +40,14 @@
               'units/layouts/battlefield_dark'
             ], function(anim, field)
             {
-              var Anim = new anim();
-              Anim.Init("field");
-              Anim.UnitAdd(new field(socket, 10, "figure_info"));
+              $.getJSON("settings.json", function(Settings)
+              {
+                var Anim = new anim();
+                Anim.Init("field");
+                Anim.UnitAdd(new field(socket, Settings.BoardSize, "figure_info"));
 
-              Anim.Run("field");
+                Anim.Run("field");
+              });
             });
         });
       })

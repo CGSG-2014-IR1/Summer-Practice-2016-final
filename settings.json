@@ -1,0 +1,3 @@
+{
+  "BoardSize": "10", "__BoardSize": "MUST be even and >= 10"
+}

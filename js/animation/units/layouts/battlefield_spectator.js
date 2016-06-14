@@ -18,7 +18,7 @@ define(
         var self = this;
         this.Materials = new mtllib();
         this.Board = new board(this.Size, 'Neutral');
-        this.UnitSkybox = new unit_skybox("../assets/images/skybox/battle1/", ".bmp");
+        this.UnitSkybox = new unit_skybox("../assets/textures/skybox/battle1/", ".bmp");
         Ani.UnitAdd(this.UnitSkybox);
         Ani.Camera.position.set(-1, 4, -2);
         Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));

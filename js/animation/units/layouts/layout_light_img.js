@@ -10,7 +10,7 @@ define(
     {
       this.Init = function(Ani)
       {
-        this.UnitSkybox = new unit_skybox("../assets/images/skybox/sunny/", ".bmp");
+        this.UnitSkybox = new unit_skybox("../assets/textures/skybox/sunny/", ".bmp");
         Ani.UnitAdd(this.UnitSkybox);
         Ani.Camera.position.set(0, 0.5, 2.5);
         Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));

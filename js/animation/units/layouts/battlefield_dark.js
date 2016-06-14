@@ -24,8 +24,9 @@ define(
        * @param {String} Name
        * @param {String} Side
        * @param {Number} Scale
+       * @param {Function} Callback
        */
-      this.LoadFigure = function( Prims, N, Src, zc, zd, xc, Name, Side, Scale )
+      this.LoadFigure = function( Prims, N, Src, zc, zd, xc, Name, Side, Scale, Callback )
       {
         var self = this;
         $.getJSON("assets/figures/" + Name + ".json", function(Stats)
@@ -40,9 +41,9 @@ define(
             };
             self.Board.Set(zd * i + zc + Src.z, xc + Src.x, figure);
             Prims.Add(zd * i + zc + Src.z + (xc + Src.x) * self.Size, figure);
-            self.Board.Refresh();
-            self.InfoUpdate();
           }
+          if (Callback)
+            Callback();
         });
       };
 
@@ -53,16 +54,31 @@ define(
        * @param {THREE.Vector3} Dir
        * @param {String} Side
        * @param {Number} Scale
+       * @param {Function} Callback
        */
-      this.PlaceSide = function( Prims, Src, Dir, Side, Scale )
+      this.PlaceSide = function( Prims, Src, Dir, Side, Scale, Callback )
       {
-        this.LoadFigure(Prims,  2, Src,         0, Dir.z * 9,     0,  'tower', Side, Scale);
-        this.LoadFigure(Prims,  2, Src, Dir.z * 1, Dir.z * 7,     0, 'knight', Side, Scale);
-        this.LoadFigure(Prims,  2, Src, Dir.z * 2, Dir.z * 5,     0, 'slayer', Side, Scale);
-        this.LoadFigure(Prims,  2, Src, Dir.z * 3, Dir.z * 3,     0,   'mage', Side, Scale);
-        this.LoadFigure(Prims,  1, Src, Dir.z * 4,         0,     0,  'queen', Side, Scale);
-        this.LoadFigure(Prims,  1, Src, Dir.z * 5,         0,     0,   'king', Side, Scale);
-        this.LoadFigure(Prims, 10, Src,         0, Dir.z * 1, Dir.x,   'pawn', Side, Scale);
+        var self = this;
+        this.LoadFigure(Prims,  2, Src, 0, Dir.z * 9,     0,  'tower', Side, Scale, function()
+        {
+          self.LoadFigure(Prims, 2, Src, Dir.z * 1, Dir.z * 7, 0, 'knight', Side, Scale, function()
+          {
+            self.LoadFigure(Prims, 2, Src, Dir.z * 2, Dir.z * 5, 0, 'slayer', Side, Scale, function()
+            {
+              self.LoadFigure(Prims, 2, Src, Dir.z * 3, Dir.z * 3, 0, 'mage', Side, Scale, function()
+              {
+                self.LoadFigure(Prims, 1, Src, Dir.z * 4, 0, 0, 'queen', Side, Scale, function()
+                {
+                  self.LoadFigure(Prims, 1, Src, Dir.z * 5, 0, 0, 'king', Side, Scale, function()
+                  {
+                    self.LoadFigure(Prims, 10, Src, 0, Dir.z * 1, Dir.x, 'pawn', Side, Scale,
+                      Callback ? Callback : null);
+                  });
+                });
+              });
+            });
+          });
+        });
       };
 
       /**
@@ -71,8 +87,15 @@ define(
        */
       this.InitFigures = function( Prims )
       {
+        var self = this;
         this.PlaceSide(Prims, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 1), 'Dark', 0.3);
-        this.PlaceSide(Prims, new THREE.Vector3(this.Size - 1, 0, this.Size - 1), new THREE.Vector3(-1, 0, -1), 'Light', 0.3);
+        this.PlaceSide(Prims, new THREE.Vector3(this.Size - 1, 0, this.Size - 1), new THREE.Vector3(-1, 0, -1), 'Light', 0.3,
+          function()
+          {
+            self.Board.Refresh();
+            self.InfoUpdate();
+            self.Socket.emit('init', self.Board);
+          });
       };
 
       this.Init = function( Ani )
@@ -81,7 +104,7 @@ define(
         this.Materials = new mtllib();
         this.Board = new board(this.Size, 'Dark');
         this.Turn = true;
-        this.UnitSkybox = new unit_skybox("../assets/images/skybox/battle1/", ".bmp");
+        this.UnitSkybox = new unit_skybox("../assets/textures/skybox/battle1/", ".bmp");
         Ani.UnitAdd(this.UnitSkybox);
         Ani.Camera.position.set(-1, 4, -2);
         Ani.Camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -133,7 +156,6 @@ define(
               this.Ani.AddPrimitive(this.Data[ind]);
             }
           };
-        this.InitFigures(this.Prims);
         this.UpdateHelpers(0, 0);
 
         this.Socket.on('turn', function(Board)
@@ -159,10 +181,9 @@ define(
         this.Socket.on('sync', function(sboard)
           {
             if (!sboard)
-              self.Socket.emit('init', self.Board);
+              self.InitFigures(self.Prims);
             else
             {
-              console.log(self.Prims);
               self.Board.Copy(Ani, sboard, self.Prims);
               self.Board.Side = 'Dark';
               self.Turn = (sboard.Side == 'Light');
@@ -293,7 +314,7 @@ define(
           this.Socket.emit('move', [p0.z, p0.x, p1.z, p1.x]);
           this.PrevMov = Ani.Timer.GlobalTime;
 
-          var m = this.Board.Move(p0.z, p0.x, p1.z, p1.x, this.Prims);
+          var m = this.Board.Move(p0.z, p0.x, p1.z, p1.x, this.Prims, Ani);
           console.log(m);
           switch (m)
           {
@@ -310,6 +331,7 @@ define(
             case 'kill':
             case 'attack':
               this.UpdateHelpers(p0.z, p0.x);
+              this.InfoUpdate();
               break;
             case 'win':
               this.Socket.emit('win', 'Dark');

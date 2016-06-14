@@ -102,6 +102,7 @@ listener.sockets.on('connection', function(socket)
       {
         Board = board;
         board.Side = 'Light';
+        socket.broadcast.emit('sync', Board);
       });
     socket.on('sync', function()
       {

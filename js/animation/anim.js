@@ -78,7 +78,7 @@ define(['./render/render', './timer', './input/keyboard'], function(render, time
           this.Scene.children.forEach(function(Child)
           {
             if (Child instanceof THREE.Mesh)
-              if (Child.material.transparent)
+              if (Child.material.refractive)
               {
                 viss.push(Child.visible);
                 Child.visible = false;
@@ -89,7 +89,7 @@ define(['./render/render', './timer', './input/keyboard'], function(render, time
           this.Scene.children.forEach(function(Child)
           {
             if (Child instanceof THREE.Mesh)
-              if (Child.material.transparent)
+              if (Child.material.refractive)
               {
                 Child.visible = viss[i];
                 i++;
