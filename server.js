@@ -31,8 +31,6 @@ var server = http.createServer(function(request, response)
     switch (path)
     {
     case '/index.html':
-      if (Sockets.length >= 2)
-        path = '/spectator.html';
       fs.readFile(__dirname + path, function(error, data)
       {
         if (error)
@@ -61,57 +59,87 @@ var server = http.createServer(function(request, response)
     }
   });
 
-var Board = null;
+var Boards = [];
+var prevjoin = null;
+var pairs = 0;
 server.listen(PORT);
 var listener = io.listen(server);
 listener.sockets.on('connection', function(socket)
   {
     socket.on('connected', function()
       {
-        Sockets.push(socket);
+        if (!prevjoin)
+          prevjoin = socket;
+        else
+        {
+          Sockets[socket.id] = {opp: prevjoin, board: pairs};
+          Sockets[prevjoin.id] = {opp: socket, board: pairs};
+          prevjoin = null;
+        }
+      });
+    socket.on('redirected', function()
+      {
+        if (!prevjoin)
+          prevjoin = socket;
+        else
+        {
+          Sockets[socket.id] = {opp: prevjoin, board: pairs};
+          Sockets[prevjoin.id] = {opp: socket, board: pairs};
+          Boards[pairs] = null;
+          pairs++;
+          prevjoin = null;
+        }
       });
 
     socket.on('chat message', function(data)
       {
         listener.emit('chat message', data);
       });
+    socket.on('turn message', function(data)
+      {
+        socket.broadcast.to(Sockets[socket.id].opp.id).emit('chat message', data);
+      });
 
     socket.on('side', function(data)
       {
-        if (Sockets.length >= 2)
+        if (Sockets[socket.id])
         {
-          if (socket === Sockets[0])
-          {
-            Sockets[0].emit('side', data == 'Light' ? 'Dark' : 'Light');
-            Sockets[1].emit('side', data);
-          }
-          else
-          {
-            Sockets[0].emit('side', data);
-            Sockets[1].emit('side', data == 'Light' ? 'Dark' : 'Light');
-          }
+          socket.broadcast.to(Sockets[socket.id].opp.id).emit('side', data == 'light' ? 'dark' : 'light');
+          socket.emit('side', data);
         }
       });
 
     socket.on('turn', function(board)
       {
-        socket.broadcast.emit('turn', board);
-        Board = board;
+        socket.broadcast.to(Sockets[socket.id].opp.id).emit('turn', board);
+        socket.emit('turn', board);
+        Boards[Sockets[socket.id].board] = board;
       });
     socket.on('init', function(board)
       {
-        Board = board;
-        board.Side = 'Light';
-        socket.broadcast.emit('sync', Board);
+        setTimeout(function()
+        {
+          if (Sockets[socket.id])
+          {
+            board.Side = 'Light';
+            Boards[Sockets[socket.id].board] = board;
+            socket.broadcast.to(Sockets[socket.id].opp.id).emit('sync', board);
+          }
+          else
+            socket.broadcast.to(Sockets[socket.id].opp.id).emit('sync', null);
+        }, 1000);
       });
     socket.on('sync', function()
       {
-        socket.emit('sync', Board);
+        if (Sockets[socket.id])
+          socket.emit('sync', Boards[Sockets[socket.id].board]);
+        else
+          socket.emit('sync', null);
       });
     socket.on('win', function(data)
       {
-        listener.emit('win', data);
-        setTimeout(function(){ process.exit() }, 60 * 1000);
+        listener.sockets.connected[Sockets[socket.id].opp.id].emit('win', data);
+        socket.emit('win', data);
       });
   });
 

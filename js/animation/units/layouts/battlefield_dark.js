@@ -158,6 +158,7 @@ define(
           };
         this.UpdateHelpers(0, 0);
 
+        this.Socket.emit('redirected');
         this.Socket.on('turn', function(Board)
           {
             self.Turn = true;
@@ -176,6 +177,7 @@ define(
         this.Socket.emit('sync');
         this.Socket.on('sync', function(sboard)
           {
+            console.log(sboard);
             if (!sboard)
               self.InitFigures(self.Prims);
             else
@@ -337,9 +339,9 @@ define(
 
         if (this.Turn && Ani.Keyboard.Keys[45] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
+          this.Socket.emit('turn message', {message: "Light, it's your turn now!", user: 'DARKNESS'});
           this.Socket.emit('turn', this.Board);
           this.Turn = false;
-          this.Socket.emit('chat message', {message: "Light, it's your turn now!", user: 'DARKNESS'});
         }
       };
     }

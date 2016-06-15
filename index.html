@@ -62,17 +62,12 @@
           });
         socket.on('side', function(side)
           {
-            // Opponent had chosen side
-            if (side === 'light')
-            {
-              socket.emit('side', 'dark');
+            console.log("REACHED THIS");
+            console.log(side);
+            if (side === 'dark')
               window.location.replace("dark.html");
-            }
-            else if (side === 'dark')
-            {
-              socket.emit('side', 'light');
+            else if (side === 'light')
               window.location.replace("light.html");
-            }
           });
       });
   </script>

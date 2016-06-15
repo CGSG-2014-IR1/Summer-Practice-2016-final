@@ -136,6 +136,7 @@ define(
           };
         this.UpdateHelpers(this.Size - 1, this.Size - 1);
 
+        this.Socket.emit('redirected');
         this.Socket.on('turn', function(Board)
           {
             self.Turn = true;
@@ -313,9 +314,9 @@ define(
 
         if (this.Turn && Ani.Keyboard.Keys[45] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {
+          this.Socket.emit('turn message', {message: "Darkness, it's your turn now!", user: 'LIGHT'});
           this.Socket.emit('turn', this.Board);
           this.Turn = false;
-          this.Socket.emit('chat message', {message: "Darkness, it's your turn now!", user: 'LIGHT'});
         }
       };
     }
