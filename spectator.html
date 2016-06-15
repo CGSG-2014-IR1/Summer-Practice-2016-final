@@ -22,7 +22,7 @@
       {
         var msgs = $('#messages');
         msgs.append("<li>" + "[" + msg.user + "]: " + msg.message);
-        if ($('#messages li').length > 30)
+        if ($('#messages li').length > 6)
           $('#messages li').eq(0).remove();
       });
     }

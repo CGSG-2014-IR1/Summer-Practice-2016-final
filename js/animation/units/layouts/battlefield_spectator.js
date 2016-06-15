@@ -57,7 +57,7 @@ define(
 
         this.Socket.on('turn', function(Board)
           {
-            self.Board.Copy(Ani, Board, self.Prims);
+            self.Board.Copy(Ani, Board, self.Prims, 3);
             self.InfoUpdate();
           });
         this.Socket.on('win', function(data)

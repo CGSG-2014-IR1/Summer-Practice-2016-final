@@ -140,11 +140,7 @@ define(
           {
             self.Turn = true;
             self.Board.Copy(Ani, Board, self.Prims);
-            self.UpdateHelpers(self.Size - 1, self.Size - 1);
-            self.SelectorFigure.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
-            self.SelectorFigure.Mesh.position.y = 0.0015;
-            self.Selector.Mesh.position.set(self.Size - 1, 0, self.Size - 1);
-            self.Selector.Mesh.position.y = 0.001;
+            self.UpdateHelpers(self.SelectorFigure.Mesh.position.z, self.SelectorFigure.Mesh.position.z);
             self.Board.Refresh();
             self.InfoUpdate();
           });
