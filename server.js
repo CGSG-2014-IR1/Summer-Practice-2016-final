@@ -30,19 +30,8 @@ var server = http.createServer(function(request, response)
 
     switch (path)
     {
-    case '/index.html':
-      fs.readFile(__dirname + path, function(error, data)
-      {
-        if (error)
-          Error(404, response);
-        else
-        {
-          response.writeHead(200, {"Content-Type": "text/html"});
-          response.write(data, "utf8");
-          response.end();
-        }
-      });
-      break;
+    case '/':
+      path = '/index.html';
     default:
       fs.readFile(__dirname + path, function(error, data)
         {
