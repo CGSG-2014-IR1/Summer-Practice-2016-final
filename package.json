@@ -1,0 +1,13 @@
+{
+  "name" : "ir1-summer-practice-2016-final",
+  "author": "ir1",
+  "version" : "1.0.0",
+  "main" : "server.js",
+  "dependencies" :
+  {
+    "fs" : "",
+    "http": "",
+    "url": "",
+    "socket.io": ""
+  }
+}

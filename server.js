@@ -7,6 +7,8 @@ var White = -1;
 var Black = -1;
 var Sockets = [];
 
+const PORT = process.env.port || 8000;
+
 function Error( Code, Response )
 {
   switch (Code)
@@ -62,7 +64,7 @@ var server = http.createServer(function(request, response)
   });
 
 var Board = null;
-server.listen(8000);
+server.listen(PORT);
 var listener = io.listen(server);
 listener.sockets.on('connection', function(socket)
   {
