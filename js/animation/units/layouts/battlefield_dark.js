@@ -257,11 +257,12 @@ define(
         el.empty();
         if (f == null)
           return;
-        el.append("<p>Type: " + f.Type + "</p>");
-        el.append("<p>Health: " + f.Health + "</p>");
-        el.append("<p>Speed: " + f.Speed + "</p>");
-        el.append("<p>Range: " + f.Radius + "</p>");
-        el.append("<p>Attack: " + f.Attack + "</p>");
+        el.append("<li>Type: " + f.Type);
+        el.append("<li>Health: " + f.Health);
+        el.append("<li>Speed: " + f.Speed);
+        el.append("<li>Range: " + f.Radius);
+        el.append("<li>Attack: " + f.Attack);
+        el.append("<li>Stamina: " + f.Stamina);
       };
 
       this.Response = function( Ani )
@@ -323,6 +324,7 @@ define(
               this.UpdateHelpers(p1.z, p1.x);
               this.SelectorFigure.Mesh.position.copy(this.Selector.Mesh.position);
               this.SelectorFigure.Mesh.position.y = 0.0015;
+              this.InfoUpdate();
               break;
             case 'kill':
             case 'attack':
