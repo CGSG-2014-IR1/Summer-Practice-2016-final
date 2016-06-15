@@ -7,6 +7,8 @@ var White = -1;
 var Black = -1;
 var Sockets = [];
 
+const PORT = process.env.port || 8000;
+
 function Error( Code, Response )
 {
   switch (Code)
