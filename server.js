@@ -3,11 +3,9 @@ var url = require('url');
 var fs = require('fs');
 var io = require('socket.io');
 
-var White = -1;
-var Black = -1;
 var Sockets = [];
 
-const PORT = process.env.port || 8000;
+var PORT = process.env.PORT || 8000;
 
 function Error( Code, Response )
 {
