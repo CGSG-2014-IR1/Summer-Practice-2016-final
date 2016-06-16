@@ -122,6 +122,7 @@ define(
 
         this.PrevMov = Ani.Timer.GlobalTime;
         this.Scale = 1;
+        this.Stir = Math.PI * 0.45;
 
         this.Prims =
           {
@@ -176,6 +177,8 @@ define(
       this.Render = function( Ani )
       {
         var shift = new THREE.Vector3(2, 4, 1).multiplyScalar(this.Scale);
+        shift.x *= Math.sin(this.Stir);
+        shift.y *= Math.cos(this.Stir);
         this.Selector.Mesh.material.uniforms.Time.value = Ani.Timer.GlobalTime;
         this.SelectorFigure.Mesh.material.uniforms.Time.value = Ani.Timer.GlobalTime;
         this.HelpMaterial.uniforms.Time.value = Ani.Timer.GlobalTime;
@@ -283,6 +286,11 @@ define(
           this.Scale *= 0.9;
         else if (Ani.Keyboard.Keys[109])
           this.Scale *= 1.1;
+
+        if (Ani.Keyboard.Keys[33])
+          this.Stir = Math.max(0.1, this.Stir - Ani.Timer.GlobalDeltaTime * 0.251);
+        else if (Ani.Keyboard.Keys[34])
+          this.Stir = Math.min(Math.PI * 0.45, this.Stir + Ani.Timer.GlobalDeltaTime * 0.25);
 
         if (this.Turn && Ani.Keyboard.Keys[13] && Ani.Timer.GlobalTime - this.PrevMov > 0.15)
         {

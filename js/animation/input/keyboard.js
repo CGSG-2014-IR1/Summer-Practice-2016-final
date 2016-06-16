@@ -14,6 +14,8 @@ define(function()
             Key.keyCode == 38 ||   // up
             Key.keyCode == 37 ||   // left
             Key.keyCode == 39 ||   // right
+            Key.keyCode == 33 ||   // pageup
+            Key.keyCode == 34 ||   // padedown
             Key.keyCode == 40)     // down
             return false;
           else
