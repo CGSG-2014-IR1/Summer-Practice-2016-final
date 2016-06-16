@@ -44,7 +44,7 @@
             {
               var Anim = new anim();
               Anim.Init("field");
-              Anim.UnitAdd(new field(socket, Settings.BoardSize, "figure_info"));
+              Anim.UnitAdd(new field(socket, Settings.BoardSize, "figure_info", "turn_indicator"));
 
               Anim.Run("field");
             });
@@ -64,6 +64,11 @@
         <tr>
           <td class="figure_info">
             <ul class="figure_info" id="figure_info"></ul>
+          </td>
+        </tr>
+        <tr class="turn_indicator">
+          <td>
+            <div class="turn_indicator" id="turn_indicator"></div>
           </td>
         </tr>
         <tr>

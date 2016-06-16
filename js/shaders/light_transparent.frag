@@ -25,7 +25,7 @@ void main()
   vec3 dist = noise(Pos);
   dnorm += dist;
 
-  vec4 refr = texture2D(TextureRefraction, PosS + (dnorm.xz + dnorm.xy + dnorm.yz) * DistortionStrength / 3.0);
+  vec4 refr = texture2D(TextureRefraction, PosS + (dnorm.xz) * DistortionStrength);
   gl_FragColor = vec4(DiffuseColor, 1.0) * refr;
   vec3 d1 = normalize(-Pos + vec3(0, 0, 5));
   vec3 d2 = normalize(-Pos + vec3(10, 0, 5));

@@ -7,7 +7,7 @@ define(
     'res/mtllib'
   ], function(char, sprim, unit_skybox, board, mtllib)
   {
-    return function( socket, size, InfoId )
+    return function( socket, size, InfoId, IndId )
     {
       this.Size = size;
       this.Socket = socket;
@@ -151,7 +151,7 @@ define(
             Ani: Ani,
             Add: function( ind, figure )
             {
-              this.Data[ind] = new char().CreateFigure(figure.Type, 0.3, figure.Side == 'Dark' ? self.Materials.Dark : self.Materials.Light);
+              this.Data[ind] = new char().CreateFigure(figure.Type, 0.3, figure.Side == 'dark' ? self.Materials.Dark : self.Materials.Light);
               this.Data[ind].Mesh.position.add(new THREE.Vector3(Math.floor(ind / self.Size), 0, Math.fmod(ind, self.Size)));
               this.Ani.AddPrimitive(this.Data[ind]);
             }
@@ -177,7 +177,6 @@ define(
         this.Socket.emit('sync');
         this.Socket.on('sync', function(sboard)
           {
-            console.log(sboard);
             if (!sboard)
               self.InitFigures(self.Prims);
             else
@@ -264,6 +263,8 @@ define(
         el.append("<li>Speed: " + f.Speed);
         el.append("<li>Range: " + f.Radius);
         el.append("<li>Attack: " + f.Attack);
+        el.append("<li>Stamina: " + f.Stamina);
+        $('#' + IndId).css("background-color", this.Turn ? "black" : "white");
       };
 
       this.Response = function( Ani )
@@ -325,6 +326,7 @@ define(
               this.UpdateHelpers(p1.z, p1.x);
               this.SelectorFigure.Mesh.position.copy(this.Selector.Mesh.position);
               this.SelectorFigure.Mesh.position.y = 0.0015;
+              this.InfoUpdate();
               break;
             case 'kill':
             case 'attack':

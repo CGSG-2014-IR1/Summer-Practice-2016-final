@@ -43,3 +43,13 @@ ul
   background-image: url("assets/textures/win/light.jpg");
   text-align: center;
 }
+
+tr.turn_indicator
+{
+  height: 10%;
+}
+
+div.turn_indicator
+{
+  height: 100%;
+}
