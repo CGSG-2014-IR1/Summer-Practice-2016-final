@@ -88,8 +88,8 @@ define(
       this.InitFigures = function( Prims )
       {
         var self = this;
-        this.PlaceSide(Prims, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 1), 'Dark', 0.3);
-        this.PlaceSide(Prims, new THREE.Vector3(this.Size - 1, 0, this.Size - 1), new THREE.Vector3(-1, 0, -1), 'Light', 0.3,
+        this.PlaceSide(Prims, new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 1), 'dark', 0.3);
+        this.PlaceSide(Prims, new THREE.Vector3(this.Size - 1, 0, this.Size - 1), new THREE.Vector3(-1, 0, -1), 'light', 0.3,
           function()
           {
             self.Board.Refresh();
@@ -102,7 +102,7 @@ define(
       {
         var self = this;
         this.Materials = new mtllib();
-        this.Board = new board(this.Size, 'Dark');
+        this.Board = new board(this.Size, 'dark');
         this.Turn = true;
         this.UnitSkybox = new unit_skybox("../assets/textures/skybox/battle1/", ".bmp");
         Ani.UnitAdd(this.UnitSkybox);
@@ -121,7 +121,7 @@ define(
         }, 250);
         this.Base.Mesh.position.set(this.Size / 2.0 - 0.5, 0, this.Size / 2.0 - 0.5);
         this.Selector = new sprim().CreatePlane(1, 1,
-          this.Materials.Selector(new THREE.Vector3(0.3, 0.3, 0.2), new THREE.Vector3(0.2, 0.2, 0.1), 0.5));
+          this.Materials.Selector(new THREE.Vector3(0.5, 0.5, 0.4), new THREE.Vector3(0.5, 0.5, 0.25), 0.5));
         this.Selector.Mesh.position.set(0, 0.001, 0);
         this.SelectorFigure = new sprim().CreatePlane(1, 1,
           this.Materials.Selector(new THREE.Vector3(0.5, 0.1, 0.1), new THREE.Vector3(0.1, 0.0, 0.0), 0.33));
@@ -161,7 +161,7 @@ define(
         this.Socket.emit('redirected');
         this.Socket.on('turn', function(Board)
           {
-            self.Turn = true;
+            self.Turn = (Board.Side == 'light');
             self.Board.Copy(Ani, Board, self.Prims);
             self.UpdateHelpers(self.SelectorFigure.Mesh.position.z, self.SelectorFigure.Mesh.position.x);
             self.Board.Refresh();
@@ -183,8 +183,8 @@ define(
             else
             {
               self.Board.Copy(Ani, sboard, self.Prims);
-              self.Board.Side = 'Dark';
-              self.Turn = (sboard.Side == 'Light');
+              self.Board.Side = 'dark';
+              self.Turn = (sboard.Side == 'light');
               self.UpdateHelpers(0, 0);
               self.SelectorFigure.Mesh.position.set(0, 0, 0);
               self.SelectorFigure.Mesh.position.y = 0.0015;
@@ -259,11 +259,11 @@ define(
         el.empty();
         if (f == null)
           return;
-        el.append("<p>Type: " + f.Type + "</p>");
-        el.append("<p>Health: " + f.Health + "</p>");
-        el.append("<p>Speed: " + f.Speed + "</p>");
-        el.append("<p>Range: " + f.Radius + "</p>");
-        el.append("<p>Attack: " + f.Attack + "</p>");
+        el.append("<li>Type: " + f.Type);
+        el.append("<li>Health: " + f.Health);
+        el.append("<li>Speed: " + f.Speed);
+        el.append("<li>Range: " + f.Radius);
+        el.append("<li>Attack: " + f.Attack);
       };
 
       this.Response = function( Ani )

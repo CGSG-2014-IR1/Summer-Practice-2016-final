@@ -110,12 +110,10 @@ listener.sockets.on('connection', function(socket)
         {
           if (Sockets[socket.id])
           {
-            board.Side = 'Light';
+            board.Side = 'light';
             Boards[Sockets[socket.id].board] = board;
             socket.broadcast.to(Sockets[socket.id].opp.id).emit('sync', board);
           }
-          else
-            socket.broadcast.to(Sockets[socket.id].opp.id).emit('sync', null);
         }, 1000);
       });
     socket.on('sync', function()

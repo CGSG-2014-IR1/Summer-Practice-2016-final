@@ -2,8 +2,10 @@ define(
   [
     'animation/effects/column',
     'animation/effects/slash',
-    'animation/effects/wave'
-  ], function(column, slash, wave)
+    'animation/effects/wave',
+    'animation/effects/stomp',
+    'animation/effects/crystal'
+  ], function(column, slash, wave, stomp, crystal)
   {
     return function( size, side )
       {
@@ -102,6 +104,12 @@ define(
               case 'queen':
                 new wave(Ani.Scene, [y1, 0.1, x1], [y2, 0.1, x2], 1000, 1.0);
                 break;
+              case 'tower':
+                new stomp(Ani.Scene, [y1, 0.1, x1], [y2, 0.1, x2], 500, 1.0);
+                break;
+              case 'knight':
+                new crystal(Ani.Scene, [y1, 0.1, x1], [y2, 0.1, x2], 1000, 1.0);
+                break;
               default:
                 new slash(Ani.Scene, [y1, 0.1, x1], [y2, 0.1, x2], 100, 2.0);
                 break;
@@ -116,7 +124,11 @@ define(
                   setTimeout(function() { Prims.Data[y2 * self.Size + x2].Mesh.visible = false }, 2500);
                   break;
                 case 'queen':
+                case 'knight':
                   setTimeout(function() { Prims.Data[y2 * self.Size + x2].Mesh.visible = false }, 1000);
+                  break;
+                case 'tower':
+                  setTimeout(function() { Prims.Data[y2 * self.Size + x2].Mesh.visible = false }, 500);
                   break;
                 default:
                   setTimeout(function() { Prims.Data[y2 * self.Size + x2].Mesh.visible = false }, 100);

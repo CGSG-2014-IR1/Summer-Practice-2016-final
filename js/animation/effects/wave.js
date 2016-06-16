@@ -11,6 +11,7 @@ define(['res/mtllib'], function(mtllib)
   {
     var self = this;
     this.Mats = new mtllib();
+    this.Mats.Light.uniforms.DiffuseColor.value = new THREE.Vector3(0.5, 0.7, 0.5);
     this.Delay = 1000.0 / 60.0;
 
     this.Dest = new THREE.Mesh(new THREE.TorusKnotGeometry(Scale * 0.5, Scale * 0.05, 100, 10, 3, 4), this.Mats.Light);

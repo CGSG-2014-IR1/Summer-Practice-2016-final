@@ -5,6 +5,7 @@ uniform float DistortionStrength;
 uniform vec3 DiffuseColor;
 
 varying vec3 Norm;
+varying vec3 NormV;
 varying vec3 Pos;
 varying vec2 PosS;
 
@@ -20,7 +21,7 @@ vec3 noise( vec3 v )
 
 void main()
 {
-  vec3 dnorm = Norm;
+  vec3 dnorm = NormV;
   vec3 dist = noise(Pos);
   dnorm += dist;
 
